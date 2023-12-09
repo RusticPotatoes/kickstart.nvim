@@ -4,5 +4,5 @@
 -- See the kickstart.nvim README for more information
 return {
     -- other plugins...
-    'loctvl842/monokai-pro.nvim',
+    'loctvl842/monokai-pro.nvim',   
 }
