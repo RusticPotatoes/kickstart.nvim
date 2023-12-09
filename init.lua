@@ -189,14 +189,14 @@ require('lazy').setup({
     },
   },
 
-  {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
-  },
+  -- {
+  --   -- Theme inspired by Atom
+  --   'navarasu/onedark.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'onedark'
+  --   end,
+  -- },
 
   {
     -- Set lualine as statusline
@@ -582,6 +582,37 @@ local servers = {
 
 -- Setup neovim lua configuration
 require('neodev').setup()
+-- Check if 'monokai' module is installed
+local status, monokai = pcall(require, 'monokai')
+if not status then
+    print("Module 'monokai' not found. Please install it.")
+else
+  -- monokai setup
+  local monokai = require('monokai')
+  local palette = monokai.classic
+  monokai.setup {
+      palette = {
+          diff_text = '#133337',
+      },
+      custom_hlgroups = {
+          TSInclude = {
+              fg = palette.aqua,
+          },
+          GitSignsAdd = {
+              fg = palette.green,
+              bg = palette.base2
+          },
+          GitSignsDelete = {
+              fg = palette.pink,
+              bg = palette.base2
+          },
+          GitSignsChange = {
+              fg = palette.orange,
+              bg = palette.base2
+          },
+      }
+  }
+end 
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
