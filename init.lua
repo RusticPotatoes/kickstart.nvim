@@ -1,5 +1,4 @@
 --[[
-
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -200,10 +199,10 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
-vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
-vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
-vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
-vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+vim.keymap.set('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
+vim.keymap.set('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
+vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
+vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
 vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle File Tree' })
 vim.keymap.set('n', '<leader>f', ':NvimTreeFindFile<CR>', { desc = 'Reveal File in Tree' })
@@ -887,9 +886,9 @@ require('lazy').setup({
   {
     -- Monokai Pro theme
     'loctvl842/monokai-pro.nvim',
-    priority = 1000,          -- load first
+    priority = 1000, -- load first
     opts = {
-      filter = 'pro',         -- classic | octagon | pro | machine | ristretto | spectrum
+      filter = 'pro', -- classic | octagon | pro | machine | ristretto | spectrum
       transparent_background = false,
     },
     config = function()
@@ -996,7 +995,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs'
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
@@ -1007,28 +1006,34 @@ require('lazy').setup({
       'nvim-tree/nvim-web-devicons', -- optional, for file icons
     },
     config = function()
-      require('nvim-tree').setup({
-        sort_by = "case_sensitive",
-        view = {
-          width = 30,
-          side = "left",
+      require('nvim-tree').setup {
+        git = {
+          enable = true, -- enables Git integration
+          ignore = false, -- don't hide .gitignored files
+          timeout = 500, -- increase if status lags
         },
         renderer = {
           group_empty = true,
+          highlight_git = true, -- optional: highlights Git status in color
+          icons = {
+            show = {
+              git = true,
+            },
+          },
         },
         filters = {
-          dotfiles = true,
+          dotfiles = false,
         },
-      })
+      }
       -- Open tree automatically when nvim is launched with a folder
-      vim.api.nvim_create_autocmd("VimEnter", {
+      vim.api.nvim_create_autocmd('VimEnter', {
         callback = function(data)
           local directory = vim.fn.isdirectory(data.file) == 1
           if directory then
             vim.cmd.cd(data.file)
-            require("nvim-tree.api").tree.open()
+            require('nvim-tree.api').tree.open()
           end
-        end
+        end,
       })
     end,
   },
@@ -1070,3 +1075,15 @@ require('lazy').setup({
 
 vim.o.termguicolors = true
 vim.o.background = 'dark'
+
+
+-- Safely jump back to last position only if it’s inside the buffer
+vim.api.nvim_create_autocmd('BufReadPost', {
+  callback = function()
+    local last = vim.fn.line([['"]])          -- saved cursor line
+    local col  = vim.fn.col([['"]])
+    if last > 0 and last <= vim.fn.line('$') then
+      vim.api.nvim_win_set_cursor(0, { last, math.max(col - 1, 0) })
+    end
+  end,
+})
